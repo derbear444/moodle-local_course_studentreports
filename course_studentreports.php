@@ -24,18 +24,36 @@
  */
 
 require_once('../../config.php');
+require_once($CFG->dirroot.'/course/lib.php');
 
-$courseid = required_param('courseid', PARAM_INT);
+// Grabs the course ID. If one is not supplied, it sets it to the site id.
+$courseid = optional_param('courseid', 0, PARAM_INT);
+if (!$courseid) {
+    $id = $SITE->id;
+}
 
-// Check capabilities or any other necessary checks here
+// Sets page layout to a report.
+$PAGE->set_pagelayout('report');
 
-// Your main page content goes here
-// Display the list of students, allowing the teacher to select them
-// Provide a form to generate the report
+// Get course details.
+if ($courseid != $SITE->id) {
+    $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+    require_login($course);
+    $context = context_course::instance($course->id);
+    require_capability('moodle/course:manageactivities', $context);
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading('Custom Report for Course: ' . $courseid);
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading('Custom Report for Course: ' . $courseid);
-
-// Your HTML and form elements go here
+    // Your main page content goes here
+    // Display the list of students, allowing the teacher to select them
+    // Provide a form to generate the report
+} else {
+    $course = $SITE;
+    require_login();
+    $context = context_system::instance();
+    $PAGE->set_context($context);
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading('Select a Course');
+}
 
 echo $OUTPUT->footer();

@@ -27,10 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * This function adds Student reports link to the course navigation block.
- * @param global_navigation $navigation a global_navigation object
+ * @param navigation_node $navigation a course navigation object
+ * @param stdClass $course current course object
+ * @param context_course $context current course context
  * @return void
  */
-function local_course_studentreports_extend_navigation($navigation) {
+function local_course_studentreports_extend_navigation_course(navigation_node $navigation, stdClass $course, context_course $context) {
     // Add a link to the custom report in the course navigation for teachers
     global $PAGE, $USER, $COURSE;
 
@@ -39,46 +41,21 @@ function local_course_studentreports_extend_navigation($navigation) {
         return;
     }
 
-    // Check the current page context.  If the context is not of a course or module then we are in another area of Moodle and return void.
-    $context = context::instance_by_id($PAGE->context->id);
-    $isvalidcontext = ($context instanceof context_course || $context instanceof context_module) ? true : false;
-
-    // If the context of a module then get the parent context.
-    $coursecontext = $context;
-    if ($context instanceof context_module) {
-        $coursecontext = $context->get_course_context();
-    }
-
-    // Also checks to make sure the user is a teacher (has manageactivites capability).
-    if (!($isvalidcontext && has_capability('moodle/course:manageactivities', $coursecontext))) {
+    // Checks to make sure the user is a teacher (has manageactivites capability).
+    if (!has_capability('moodle/course:manageactivities', $context, $USER)) {
         return;
     }
 
-    $icon = new pix_icon('i/report', '');
-    $linkName = "Student reports"; #get_string('nav_course_studentsreports', 'course_studentreports');
-    $linkUrl = new moodle_url('/local/course_studentreports/course_studentreports.php', array('courseid' => $COURSE->id));
+    // Find the node associated with the "Reports" page.
+    $reportsNode = $navigation->find("coursereports", navigation_node::TYPE_CONTAINER);
 
-    $currentCourseNode = $navigation->find('currentcourse', $navigation::TYPE_ROOTNODE);
-    if (isNodeNotEmpty($currentCourseNode)) {
-        // we have a 'current course' node, add the link to it.
-        $currentCourseNode->add($linkName, $linkUrl, navigation_node::TYPE_SETTING, $linkName, 'studentreports-currentcourse', $icon);
-    }
+    // If the "Reports" node is found, add the link as a child.
+    if ($reportsNode) {
+        $icon = new pix_icon('i/report', '');
+        $linkName = get_string('nav_course_studentreports', 'local_course_studentreports');
+        $linkUrl = new moodle_url('/local/course_studentreports/course_studentreports.php', array('courseid' => $course->id));
 
-    $myCoursesNode = $navigation->find('mycourses', $navigation::TYPE_ROOTNODE);
-    if(isNodeNotEmpty($myCoursesNode)) {
-        $currentCourseInMyCourses = $myCoursesNode->find($coursecontext->instanceid, navigation_node::TYPE_COURSE);
-        if($currentCourseInMyCourses) {
-            // we found the current course in 'my courses' node, add the link to it.
-            $currentCourseInMyCourses->add($linkName, $linkUrl, navigation_node::TYPE_SETTING, $linkName, 'studentreports-mycourses', $icon);
-        }
-    }
-
-    $coursesNode = $navigation->find('courses', $navigation::TYPE_ROOTNODE);
-    if (isNodeNotEmpty($coursesNode)) {
-        $currentCourseInCourses = $coursesNode->find($coursecontext->instanceid, navigation_node::TYPE_COURSE);
-        if ($currentCourseInCourses) {
-            // we found the current course in the 'courses' node, add the link to it.
-            $currentCourseInCourses->add($linkName, $linkUrl, navigation_node::TYPE_SETTING, $linkName, 'studentreports-allcourses', $icon);
-        }
+        // Add the link as a child to the "Reports" node.
+        $reportsNode->add($linkName, $linkUrl, navigation_node::TYPE_CUSTOM, $linkName, 'studentreports-link', $icon);
     }
 }

@@ -26,4 +26,4 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Course Student Reports';
-$string['nav_course_studentsreports'] = 'Student reports';
+$string['nav_course_studentreports'] = 'Student reports';
