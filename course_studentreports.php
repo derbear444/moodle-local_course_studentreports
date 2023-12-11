@@ -23,13 +23,19 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+require_once('../../config.php');
 
-if ($hassiteconfig) {
-    $settings = new admin_settingpage('local_course_studentreports_settings', new lang_string('pluginname', 'local_course_studentreports'));
+$courseid = required_param('courseid', PARAM_INT);
 
-    // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
-    if ($ADMIN->fulltree) {
-        // TODO: Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
-    }
-}
+// Check capabilities or any other necessary checks here
+
+// Your main page content goes here
+// Display the list of students, allowing the teacher to select them
+// Provide a form to generate the report
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading('Custom Report for Course: ' . $courseid);
+
+// Your HTML and form elements go here
+
+echo $OUTPUT->footer();

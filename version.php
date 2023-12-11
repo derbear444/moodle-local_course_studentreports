@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Plugin administration pages are defined here.
  *
  * @package     local_course_studentreports
- * @copyright   2023 Derek Wilson <wilsondc5@appstate.edu>
+ * @author      2023 Derek Wilson <wilsondc5@appstate.edu>
+ * @copyright   (c) 2023 Appalachian State University, Boone, NC
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
