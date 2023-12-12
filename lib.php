@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 function local_course_studentreports_extend_navigation_course(navigation_node $navigation, stdClass $course, context_course $context) {
     // Add a link to the custom report in the course navigation for teachers
-    global $PAGE, $USER, $COURSE;
+    global $USER;
 
     // If for some reason there is no user ID, just return.
     if (empty($USER->id)) {
@@ -53,7 +53,7 @@ function local_course_studentreports_extend_navigation_course(navigation_node $n
     if ($reportsNode) {
         $icon = new pix_icon('i/report', '');
         $linkName = get_string('nav_course_studentreports', 'local_course_studentreports');
-        $linkUrl = new moodle_url('/local/course_studentreports/course_studentreports.php', array('courseid' => $course->id));
+        $linkUrl = new moodle_url('/local/course_studentreports/index.php', array('courseid' => $course->id));
 
         // Add the link as a child to the "Reports" node.
         $reportsNode->add($linkName, $linkUrl, navigation_node::TYPE_CUSTOM, $linkName, 'studentreports-link', $icon);
