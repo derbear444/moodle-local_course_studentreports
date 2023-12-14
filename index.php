@@ -30,17 +30,20 @@ require_once($CFG->dirroot.'/user/lib.php');
 use core_table\local\filter\filter;
 use core_table\local\filter\integer_filter;
 
-// Grabs the course ID. If one is not supplied, it sets it to the site id.
-$courseid = required_param('courseid', PARAM_INT);
-
 // Sets default page size.
 $participantsperpage = intval(get_config('moodlecourse', 'participantsperpage'));
 define('DEFAULT_PAGE_SIZE', (!empty($participantsperpage) ? $participantsperpage : 20));
 
 const STUDENT_ROLE_ID = 20;
 
+// Parameters for the page
+$courseid = required_param('courseid', PARAM_INT);
+$perpage      = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT); // How many per page.
+
 // Sets the page url.
-$PAGE->set_url('/local/course_studentreports/index.php', array('courseid' => $courseid));
+$PAGE->set_url('/local/course_studentreports/index.php', array(
+        'courseid' => $courseid,
+        'perpage' => $perpage));
 // Sets page layout to a report.
 $PAGE->set_pagelayout('report');
 
@@ -78,12 +81,12 @@ if ($courseid != $SITE->id) {
     // Do this so we can get the total number of rows.
     ob_start();
     $participanttable->set_filterset($filterset);
-    $participanttable->out(DEFAULT_PAGE_SIZE, true);
+    $participanttable->out($perpage, true);
     $participanttablehtml = ob_get_contents();
     ob_end_clean();
 
     echo html_writer::start_tag('form', [
-            'action' => 'action_redir.php',
+            'action' => 'action.php',
             'method' => 'post',
             'id' => 'studentreportsform',
             'data-course-id' => $course->id,
@@ -109,20 +112,32 @@ if ($courseid != $SITE->id) {
 
     echo '<br /><div class="buttons"><div class="form-inline">';
 
-    echo html_writer::start_tag('div', array('class' => 'btn-group'));
+    // Defines selection for type of report generated.
+    $displaylist = array("Course grade", "Number of days missed", "Last date of attendance");
+    $selectactionparams = array(
+            'id' => 'formactionid',
+            'class' => 'ml-2',
+            'data-action' => 'toggle',
+            'data-togglegroup' => 'participants-table',
+            'data-toggle' => 'action',
+            'disabled' => 'disabled',
+            'multiple' => 'multiple'
+    );
+    $label = html_writer::tag('label', get_string("withselectedusers"),
+            ['for' => 'formactionid', 'class' => 'col-form-label d-inline']);
+    $select = html_writer::select($displaylist, 'formaction', '', null, $selectactionparams);
+    echo html_writer::tag('div', $label . $select);
 
-    if ($participanttable->get_page_size() < $participanttable->totalrows) {
-        // Select all users, refresh table showing all users and mark them all selected.
-        $label = get_string('selectalluserswithcount', 'moodle', $participanttable->totalrows);
-        echo html_writer::empty_tag('input', [
-                'type' => 'button',
-                'id' => 'checkall',
-                'class' => 'btn btn-secondary',
-                'value' => $label,
-                'data-target-page-size' => TABLE_SHOW_ALL_PAGE_SIZE,
-        ]);
-    }
-    echo html_writer::end_tag('div');
+    echo '<input type="hidden" name="id" value="' . $course->id . '" />';
+    echo '<div class="d-none" data-region="state-help-icon">' . $OUTPUT->help_icon('publishstate', 'notes') . '</div>';
+
+    echo '</div></div></div>';
+
+    $bulkoptions->noteStateNames = note_get_state_names();
+
+    echo '</form>';
+
+    echo '</div>';  // Userlist.
 }
 
 echo $OUTPUT->footer();
