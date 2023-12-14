@@ -27,6 +27,7 @@ require_once('../../config.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/user/lib.php');
 
+use core\report_helper;
 use core_table\local\filter\filter;
 use core_table\local\filter\integer_filter;
 
@@ -60,8 +61,17 @@ if ($courseid != $SITE->id) {
     // Only allows someone able to manageactivities in the course to view this page
     require_capability('moodle/course:manageactivities', $context);
 
+    // Sets page title and heading
+    $PAGE->set_title($course->shortname. ': ' . get_string('nav_course_studentreports', 'local_course_studentreports'));
+    $PAGE->set_heading($course->fullname);
+
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('course_studentreports_courseheading', 'local_course_studentreports', $course->fullname));
+
+    // Print selector dropdown.
+    $navname = get_string('nav_course_studentreports', 'local_course_studentreports');
+    report_helper::print_report_selector($navname);
+
+    echo $OUTPUT->heading($course->fullname);
 
     $participanttable = new \core_user\table\participants("user-index-studentreports-{$course->id}");
 
