@@ -26,7 +26,6 @@
 /**
  * The core renderer
  *
- * @package     local_course_studentreports
  * @author      2023 Derek Wilson <wilsondc5@appstate.edu>
  * @copyright   (c) 2023 Appalachian State University, Boone, NC
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -54,5 +53,60 @@ class local_course_studentreports_renderer extends plugin_renderer_base {
         $downloadhtml = html_writer::tag('div', $form);
 
         return $downloadhtml;
+    }
+
+    /**
+     * Renderers the add users button.
+     *
+     * @param add_user_button $button
+     * @return string XHTML
+     */
+    protected function render_add_user_button(add_user_button $button) {
+        $attributes = array('type' => 'submit',
+                'value'    => $button->label,
+                'disabled' => $button->disabled ? 'disabled' : null,
+                'title'    => $button->tooltip,
+                'class'    => 'btn btn-primary');
+
+        if ($button->actions) {
+            $id = html_writer::random_id('single_button');
+            $attributes['id'] = $id;
+            foreach ($button->actions as $action) {
+                $this->add_action_handler($action, $id);
+            }
+        }
+        $button->initialise_js($this->page);
+
+        // first the input element
+        $output = html_writer::empty_tag('input', $attributes);
+
+        // then hidden fields
+        $params = $button->url->params();
+        if ($button->method === 'post') {
+            $params['sesskey'] = sesskey();
+        }
+        foreach ($params as $var => $val) {
+            $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $var, 'value' => $val));
+        }
+
+        // then div wrapper for xhtml strictness
+        $output = html_writer::tag('div', $output);
+
+        // now the form itself around it
+        if ($button->method === 'get') {
+            $url = $button->url->out_omit_querystring(true); // url without params, the anchor part allowed
+        } else {
+            $url = $button->url->out_omit_querystring();     // url without params, the anchor part not allowed
+        }
+        if ($url === '') {
+            $url = '#'; // there has to be always some action
+        }
+        $attributes = array('method' => $button->method,
+                'action' => $url,
+                'id'     => $button->formid);
+        $output = html_writer::tag('form', $output, $attributes);
+
+        // and finally one more wrapper with class
+        return html_writer::tag('div', $output, array('class' => $button->class));
     }
 }

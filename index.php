@@ -24,8 +24,10 @@
  */
 
 require_once('../../config.php');
+require_once('./locallib.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/user/lib.php');
+require_once($CFG->dirroot . '/enrol/locallib.php');
 
 use core\report_helper;
 use core_table\local\filter\filter;
@@ -34,8 +36,6 @@ use core_table\local\filter\integer_filter;
 // Sets default page size.
 $participantsperpage = intval(get_config('moodlecourse', 'participantsperpage'));
 define('DEFAULT_PAGE_SIZE', (!empty($participantsperpage) ? $participantsperpage : 20));
-
-const STUDENT_ROLE_ID = 20;
 
 // Parameters for the page
 $courseid = required_param('courseid', PARAM_INT);
@@ -53,7 +53,7 @@ $PAGE->set_url($url);
 // Sets page layout to a report.
 $PAGE->set_pagelayout('report');
 
-// If a course is specified, list the users for that course. Otherwise, display a list of courses to generate a report for.
+// If a course is specified, list the users for that course.
 if ($courseid != $SITE->id) {
     $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
     require_login($course);
@@ -69,17 +69,6 @@ if ($courseid != $SITE->id) {
     // Only allows someone able to manageactivities in the course to view this page
     require_capability('moodle/course:manageactivities', $context);
 
-    // If csv is requested, attempt to download csv file
-    //if ($csv) {
-    //    $shortname = format_string($course->shortname, true, array('context' => $context));
-    //    header('Content-Disposition: attachment; filename=student_report.'.
-    //            preg_replace('/[^a-z0-9-]/','_',core_text::strtolower(strip_tags($shortname))).'.csv');
-    //    header('Content-Type: text/csv; charset=UTF-8');
-    //    $sep=",";
-    //    $line="\n";
-    //    $data = data_submitted();
-    //}
-
     // Sets page title and heading
     $PAGE->set_title($course->shortname. ': ' . get_string('nav_course_studentreports', 'local_course_studentreports'));
     $PAGE->set_heading($course->fullname);
@@ -94,16 +83,35 @@ if ($courseid != $SITE->id) {
 
     $participanttable = new \core_user\table\participants("user-index-studentreports-{$course->id}");
 
+    // Adds user button to navigation.
+    $adduserurl = new moodle_url( '/local/course_studentreports/add.php', array('enrolid'=>1, 'id'=>$course->id));
+
+    $adduserbutton = new add_user_button($adduserurl, get_string('adduser', 'local_course_studentreports'), 'get');
+    $PAGE->requires->js_call_amd('enrol_manual/quickenrolment', 'init', array('contextid' => $context->id));
+    $adduserbuttonout = $output->render($adduserbutton);
+
+    echo html_writer::div($adduserbuttonout, '', [
+            'data-region' => 'wrapper',
+            'data-table-uniqueid' => $participanttable->uniqueid,
+    ]);
+    //echo $OUTPUT->render_participants_tertiary_nav($course, html_writer::div($adduserbuttonout, '', [
+    //        'data-region' => 'wrapper',
+    //        'data-table-uniqueid' => $participanttable->uniqueid,
+    //]));
+
     // Render the user filters.
     $userrenderer = $PAGE->get_renderer('core_user');
     echo $userrenderer->participants_filter($context, $participanttable->uniqueid);
+
+    // Grabs 'student' role id
+    $student_role_id = intval($DB->get_record('role', array('shortname' => 'student'), 'id', MUST_EXIST)->id);
 
     // Define the filters.
     $filterset = new \core_user\table\participants_filterset();
     // Selects only this course.
     $filterset->add_filter(new integer_filter('courseid', filter::JOINTYPE_DEFAULT, [(int)$course->id]));
     // Only displays students.
-    $filterset->add_filter(new integer_filter('roles', filter::JOINTYPE_DEFAULT, [STUDENT_ROLE_ID]));
+    $filterset->add_filter(new integer_filter('roles', filter::JOINTYPE_DEFAULT, [$student_role_id]));
 
     echo '<div class="userlist">';
 
@@ -132,10 +140,6 @@ if ($courseid != $SITE->id) {
     );
 
     echo $participanttablehtml;
-
-    $bulkoptions = (object) [
-            'uniqueid' => $participanttable->uniqueid,
-    ];
 
     echo '<br /><div class="buttons"><div class="form-inline">';
 
@@ -167,11 +171,20 @@ if ($courseid != $SITE->id) {
 
     echo '</div></div></div>';
 
-    $bulkoptions->noteStateNames = note_get_state_names();
+    // Need to re-generate the buttons to avoid having elements with duplicate ids on the page.
+    $adduserbutton = new add_user_button($adduserurl, get_string('adduser', 'local_course_studentreports'));
+    $adduserbuttonout = $output->render($adduserbutton);
 
-    // Add download button
+    // Add buttons.
     $downloadstring = get_string('csvdownload', 'local_course_studentreports');
-    echo "<input type='submit' value='$downloadstring' />";
+    $buttonclass = 'btn btn-primary ml-2';
+    $downloadButton = html_writer::tag('button', $downloadstring, ['type' => 'submit', 'class' => $buttonclass]);
+
+    echo html_writer::div( $adduserbuttonout . $downloadButton, 'd-flex justify-content-end', [
+            'data-region' => 'wrapper',
+            'data-table-uniqueid' => $participanttable->uniqueid,
+    ]);
+
 
     echo '</form>';
 

@@ -40,11 +40,6 @@ if ($data = data_submitted()) {
         // Grabs report options requested
         $reports = $data->formaction;
 
-        // Grabs course information
-        $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
-        $context = context_course::instance($courseid);
-        $PAGE->set_context($context);
-
         // Userid hack from user/action_redir.php
         $userids = array();
         foreach ($data as $k => $v) {
@@ -52,10 +47,22 @@ if ($data = data_submitted()) {
                 $userids[] = $m[1];
             }
         }
+        $userids = array(6,7,8);
 
-        // Gets user information from userids
-        $users = get_role_users(20, $context, false, '', null, true, '', '', '',
-                'u.id IN (' . implode(',', $userids) . ')');
+        // If there are no userids or reports still, exit early
+        if (!($userids && $reports)) {
+            // Returns to previous page
+            redirect($data->returnto);
+        }
+
+        // Grabs course information
+        $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+        $context = context_course::instance($courseid);
+        $PAGE->set_context($context);
+
+        // Gets user information from userids.
+        // Note that this can grab any user, regardless of context, but will just get blank entries later in the report if not part of the course.
+        $users = user_get_users_by_id($userids);
 
         // Sets up csv export
         $csv_writer = new csv_export_writer();
@@ -146,4 +153,7 @@ if ($data = data_submitted()) {
     }
     // Returns to previous page
     redirect($data->returnto);
-} // Throw error if accessed any other way
+} else {
+    // Throw error if accessed any other way (GET, etc.)
+    throw new moodle_exception('nopermissions', 'local_course_studentreports', '', get_string('actionerror', 'local_course_studentreports'));
+}
