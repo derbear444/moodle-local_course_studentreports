@@ -64,8 +64,8 @@ class add_user_button extends single_button {
         static $count = 0;
         $count ++;
         parent::__construct($url, $label, $method);
-        $this->class = 'singlebutton enrolusersbutton';
-        $this->formid = 'enrolusersbutton-'.$count;
+        $this->class = 'singlebutton addusersbutton';
+        $this->formid = 'addusersbutton-'.$count;
     }
 
     /**

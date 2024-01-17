@@ -29,10 +29,6 @@ require_once($CFG->dirroot . '/user/lib.php');
 require_once($CFG->dirroot . '/mod/attendance/lib.php');
 require_once($CFG->libdir . '/csvlib.class.php');
 
-// Used to determine when a student is present or absent in attendance plugin
-const STATUS_PRESENT_ID = 5;
-const STATUS_ABSENT_ID = 6;
-
 // Check if data is submitted
 if ($data = data_submitted()) {
     // Grabs the courseid and returns automatically if there is not one
@@ -47,7 +43,6 @@ if ($data = data_submitted()) {
                 $userids[] = $m[1];
             }
         }
-        $userids = array(6,7,8);
 
         // If there are no userids or reports still, exit early
         if (!($userids && $reports)) {
@@ -90,6 +85,11 @@ if ($data = data_submitted()) {
             $summary = new mod_attendance_summary($attendance_instance->id, $userids);
             // Grabs the needed attendance sessions for the course
             $attendance_sessions = array_reverse($DB->get_records('attendance_sessions', array('attendanceid' => $attendance_instance->id),'sessdate', 'id,sessdate'));
+            // Grabs the id for the 'Present' and 'Late' statuses in the course
+            $attendance_status_ids = array(
+                    $DB->get_record('attendance_statuses', array('attendanceid' => $attendance_instance->id, 'description' => 'Present'), 'id')->id,
+                    $DB->get_record('attendance_statuses', array('attendanceid' => $attendance_instance->id, 'description' => 'Late'), 'id')->id
+            );
         }
         // Gets grade information
         $course_final_grades = $DB->get_record('grade_items', array('courseid' => $courseid, 'itemtype' => 'course'), 'id');
@@ -120,7 +120,8 @@ if ($data = data_submitted()) {
                     foreach ($attendance_sessions as $session) {
                         // Grabs logs for current attendance session
                         $attendance_log = $DB->get_record('attendance_log', array('sessionid' => $session->id, 'studentid' => $user->id), 'statusid');
-                        if ($attendance_log && $attendance_log->statusid == STATUS_PRESENT_ID) {
+                        if ($attendance_log && in_array($attendance_log->statusid, $attendance_status_ids)) {
+                            // Uses userdate function to format the session date
                             $last_present_date = userdate($session->sessdate);
                             break;
                         }

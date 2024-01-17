@@ -90,14 +90,10 @@ if ($courseid != $SITE->id) {
     $PAGE->requires->js_call_amd('enrol_manual/quickenrolment', 'init', array('contextid' => $context->id));
     $adduserbuttonout = $output->render($adduserbutton);
 
-    echo html_writer::div($adduserbuttonout, '', [
+    echo html_writer::div($adduserbuttonout, 'adduserbutton', [
             'data-region' => 'wrapper',
             'data-table-uniqueid' => $participanttable->uniqueid,
     ]);
-    //echo $OUTPUT->render_participants_tertiary_nav($course, html_writer::div($adduserbuttonout, '', [
-    //        'data-region' => 'wrapper',
-    //        'data-table-uniqueid' => $participanttable->uniqueid,
-    //]));
 
     // Render the user filters.
     $userrenderer = $PAGE->get_renderer('core_user');
@@ -179,8 +175,8 @@ if ($courseid != $SITE->id) {
     $downloadstring = get_string('csvdownload', 'local_course_studentreports');
     $buttonclass = 'btn btn-primary ml-2';
     $downloadButton = html_writer::tag('button', $downloadstring, ['type' => 'submit', 'class' => $buttonclass]);
-
-    echo html_writer::div( $adduserbuttonout . $downloadButton, 'd-flex justify-content-end', [
+    // Writes add user button
+    echo html_writer::div( $adduserbuttonout . $downloadButton, 'adduserbutton d-flex justify-content-end', [
             'data-region' => 'wrapper',
             'data-table-uniqueid' => $participanttable->uniqueid,
     ]);
