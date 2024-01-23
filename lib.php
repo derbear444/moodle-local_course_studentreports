@@ -59,3 +59,25 @@ function local_course_studentreports_extend_navigation_course(navigation_node $n
         $reportsNode->add($linkName, $linkUrl, navigation_node::TYPE_CUSTOM, $linkName, 'studentreports-link', $icon);
     }
 }
+
+/**
+ * Serve the add users form as a fragment.
+ *
+ * @param array $args List of named arguments for the fragment loader.
+ * @return string
+ */
+function local_course_studentreports_output_fragment_add_users_form($args) {
+    $args = (object) $args;
+    $context = $args->context;
+    $o = '';
+
+    //require_capability('enrol/manual:enrol', $context);
+    $mform = new local_course_studentreports_add_users_form(null, $args);
+
+    ob_start();
+    $mform->display();
+    $o .= ob_get_contents();
+    ob_end_clean();
+
+    return $o;
+}

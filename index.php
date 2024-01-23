@@ -86,11 +86,15 @@ if ($courseid != $SITE->id) {
     // Adds user button to navigation.
     $adduserurl = new moodle_url( '/local/course_studentreports/add.php', array('enrolid'=>1, 'id'=>$course->id));
 
+    // Adds adduser JS script and creates Add User button
+    $adduseroptions = (object) [
+            'contextid' => $context->id,
+    ];
+    $PAGE->requires->js_call_amd('local_course_studentreports/adduser', 'init', [$adduseroptions]);
     $adduserbutton = new add_user_button($adduserurl, get_string('adduser', 'local_course_studentreports'), 'get');
-    $PAGE->requires->js_call_amd('enrol_manual/quickenrolment', 'init', array('contextid' => $context->id));
     $adduserbuttonout = $output->render($adduserbutton);
 
-    echo html_writer::div($adduserbuttonout, 'adduserbutton', [
+    echo html_writer::div($adduserbuttonout, 'addusersbutton', [
             'data-region' => 'wrapper',
             'data-table-uniqueid' => $participanttable->uniqueid,
     ]);
@@ -175,14 +179,16 @@ if ($courseid != $SITE->id) {
     $downloadstring = get_string('csvdownload', 'local_course_studentreports');
     $buttonclass = 'btn btn-primary ml-2';
     $downloadButton = html_writer::tag('button', $downloadstring, ['type' => 'submit', 'class' => $buttonclass]);
+
+    echo $downloadButton;
+
+    echo '</form>';
+
     // Writes add user button
-    echo html_writer::div( $adduserbuttonout . $downloadButton, 'adduserbutton d-flex justify-content-end', [
+    echo html_writer::div( $adduserbuttonout, 'addusersbutton d-flex justify-content-end', [
             'data-region' => 'wrapper',
             'data-table-uniqueid' => $participanttable->uniqueid,
     ]);
-
-
-    echo '</form>';
 
     echo '</div>';  // Userlist.
 }

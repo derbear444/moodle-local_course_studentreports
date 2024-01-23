@@ -24,7 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-// Index strings
+// Index strings.
 $string['pluginname'] = 'Course Student Reports';
 $string['nav_course_studentreports'] = 'Student reports';
 $string['course_studentreports_courseheading'] = 'Student reports: {$a}';
@@ -32,14 +32,16 @@ $string['course_studentreports_participantsfound'] = '{$a} participants found';
 $string['withselectedusers'] = 'Select reports to generate with selected users...';
 $string['csvdownload'] = 'Download .csv';
 $string['adduser'] = 'Add students';
-// Name of reports
+// Name of reports.
 $string['coursegradeoption'] = 'Course grade';
 $string['lastattendanceoption'] = 'Last date of attendance';
 $string['daysmissedoption'] = 'Number of days missed';
-// Action strings
+// Action strings.
 $string['studentnametitle'] = 'First name/Last name';
 $string['studentemailtitle'] = 'Email address';
 $string['nodata'] = 'No Data';
 $string['csvfilename'] = 'studentreports.{$a->shortname}.{$a->time}';
-// Error strings
+// Error strings.
 $string['actionerror'] = 'You do not have permission to view this page.';
+// Modal strings.
+$string['studentselect'] = 'Student selection';
