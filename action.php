@@ -122,7 +122,7 @@ if ($data = data_submitted()) {
                         $attendance_log = $DB->get_record('attendance_log', array('sessionid' => $session->id, 'studentid' => $user->id), 'statusid');
                         if ($attendance_log && in_array($attendance_log->statusid, $attendance_status_ids)) {
                             // Uses userdate function to format the session date
-                            $last_present_date = userdate($session->sessdate, strftime('%m/%d/%Y'));
+                            $last_present_date = userdate($session->sessdate, get_string('strftime', 'local_course_studentreports'));
                             break;
                         }
                     }
