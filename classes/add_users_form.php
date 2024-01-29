@@ -15,13 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Enrol users form.
+ * Add users form.
  *
- * Simple form to search for users and add them using a manual enrolment to this course.
+ * Simple form to search for users and add them to the student reports table.
  *
- * @package enrol_manual
- * @copyright 2016 Damyon Wiese
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @package     local_course_studentreports
+ * @author      2023 Derek Wilson <wilsondc5@appstate.edu>
+ * @copyright   (c) 2023 Appalachian State University, Boone, NC
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
