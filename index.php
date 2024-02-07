@@ -29,6 +29,7 @@ require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/user/lib.php');
 require_once($CFG->dirroot . '/enrol/locallib.php');
 
+use local_course_studentreports\table;
 use core\report_helper;
 use core_table\local\filter\filter;
 use core_table\local\filter\integer_filter;
@@ -81,7 +82,7 @@ if ($courseid != $SITE->id) {
 
     echo $OUTPUT->heading($course->fullname);
 
-    $participanttable = new \core_user\table\participants("user-index-studentreports-{$course->id}");
+    $participanttable = new table\users("user-index-studentreports-{$course->id}");
 
     // Adds user button to navigation.
     $adduserurl = new moodle_url( '/local/course_studentreports/add.php', array('enrolid'=>1, 'id'=>$course->id));

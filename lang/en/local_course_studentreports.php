@@ -32,6 +32,7 @@ $string['course_studentreports_participantsfound'] = '{$a} participants found';
 $string['withselectedusers'] = 'Select reports to generate with selected users...';
 $string['csvdownload'] = 'Download .csv';
 $string['adduser'] = 'Add students';
+$string['strftime'] = "%m/%d/%Y";
 // Name of reports.
 $string['coursegradeoption'] = 'Course grade';
 $string['lastattendanceoption'] = 'Last date of attendance';

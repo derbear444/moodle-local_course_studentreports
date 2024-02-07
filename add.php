@@ -137,7 +137,7 @@ if ($canenrol && optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) 
 
             if ($timeend) {
                 $timeend = make_timestamp($timeend['year'], $timeend['month'], $timeend['day'], $timeend['hour'],
-                        $timeend['minute']);
+                    $timeend['minute']);
             } else if ($extendperiod <= 0) {
                 $timeend = 0;
             } else {
