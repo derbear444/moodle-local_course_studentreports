@@ -23,12 +23,9 @@
  */
 import * as DynamicTable from 'core_table/dynamic';
 import * as Str from 'core/str';
-import * as Toast from 'core/toast';
-import Config from 'core/config';
 import Fragment from 'core/fragment';
 import ModalEvents from 'core/modal_events';
 import Notification from 'core/notification';
-import jQuery from 'jquery';
 import Pending from 'core/pending';
 import Prefetch from 'core/prefetch';
 import ModalSaveCancel from 'core/modal_save_cancel';
@@ -102,7 +99,7 @@ const showModal = (dynamicTable, contextId) => {
             modal.getRoot().on(ModalEvents.save, e => {
                 // Trigger a form submission, so that any mform elements can do final tricks before the form submission
                 // is processed.
-                // The actual submit even tis captured in the next handler.
+                // The actual submit event is captured in the next handler.
 
                 e.preventDefault();
                 modal.getRoot().find('form').submit();
@@ -111,7 +108,7 @@ const showModal = (dynamicTable, contextId) => {
             modal.getRoot().on('submit', 'form', e => {
                 e.preventDefault();
 
-                submitFormAjax(dynamicTable, modal);
+                submitForm(dynamicTable, modal);
             });
 
             modal.getRoot().on(ModalEvents.hidden, () => {
@@ -121,13 +118,6 @@ const showModal = (dynamicTable, contextId) => {
             return modal;
         })
         .then(modal => Promise.all([modal, modal.getBodyPromise()]))
-        .then(([modal, body]) => {
-            if (body.get(0).querySelector(Selectors.cohortSelector)) {
-                return modal.setSaveButtonText(Str.get_string('enroluserscohorts', 'enrol_manual')).then(() => modal);
-            }
-
-            return modal;
-        })
         .then(modal => {
             pendingPromise.resolve();
 
@@ -142,7 +132,7 @@ const showModal = (dynamicTable, contextId) => {
  * @param {HTMLElement} dynamicTable
  * @param {Object} modal
  */
-const submitFormAjax = (dynamicTable, modal) => {
+const submitForm = (dynamicTable, modal) => {
     // Note: We use a jQuery object here so that we can use its serialize functionality.
     const form = modal.getRoot().find('form');
 
@@ -153,35 +143,9 @@ const submitFormAjax = (dynamicTable, modal) => {
     modal.hide();
     modal.destroy();
 
-    jQuery.ajax(
-        `${Config.wwwroot}/enrol/manual/ajax.php?${form.serialize()}`,
-        {
-            type: 'GET',
-            processData: false,
-            contentType: "application/json",
-        }
-    )
-        .then(response => {
-            if (response.error) {
-                throw new Error(response.error);
-            }
-
-            return response.count;
-        })
-        .then(count => {
-            return Promise.all([
-                Str.get_string('totalenrolledusers', 'enrol', count),
-                DynamicTable.refreshTableContent(dynamicTable),
-            ]);
-        })
-        .then(([notificationBody]) => notificationBody)
-        .then(notificationBody => Toast.add(notificationBody))
-        .catch(error => {
-            Notification.addNotification({
-                message: error.message,
-                type: 'error',
-            });
-        });
+    return Promise.all([
+        DynamicTable.refreshTableContent(dynamicTable),
+    ]);
 };
 
 /**
@@ -194,7 +158,6 @@ export const init = ({contextid}) => {
 
     Prefetch.prefetchStrings('local_course_studentreports', [
         'adduser',
-        'enroluserscohorts',
     ]);
 
     Prefetch.prefetchString('enrol', 'totalenrolledusers');
