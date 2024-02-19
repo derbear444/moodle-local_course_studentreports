@@ -31,6 +31,7 @@ use context;
 use core_table\dynamic as dynamic_table;
 use core_table\local\filter\filterset;
 use moodle_url;
+use local_course_studentreports\output;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -190,7 +191,7 @@ class users extends \table_sql implements dynamic_table
 
         $this->set_default_per_page(20);
 
-        $this->set_attribute('id', 'participants');
+        $this->set_attribute('id', 'users');
 
         $this->countries = get_string_manager()->get_list_of_countries(true);
         $this->extrafields = $extrafields;
@@ -255,7 +256,7 @@ class users extends \table_sql implements dynamic_table
         global $OUTPUT;
 
         $roles = isset($this->allroleassignments[$data->id]) ? $this->allroleassignments[$data->id] : [];
-        $editable = new \core_user\output\user_roles_editable($this->course,
+        $editable = new output\user_roles($this->course,
             $this->context,
             $data,
             $this->allroles,

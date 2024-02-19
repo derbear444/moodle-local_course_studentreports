@@ -71,7 +71,6 @@ function local_course_studentreports_output_fragment_add_users_form($args) {
     $context = $args->context;
     $o = '';
 
-    //require_capability('enrol/manual:enrol', $context);
     $mform = new local_course_studentreports_add_users_form(null, $args);
 
     ob_start();
