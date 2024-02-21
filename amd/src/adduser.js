@@ -29,6 +29,9 @@ import Notification from 'core/notification';
 import Pending from 'core/pending';
 import Prefetch from 'core/prefetch';
 import ModalSaveCancel from 'core/modal_save_cancel';
+import * as Toast from 'core/toast';
+import Config from 'core/config';
+import jQuery from 'jquery';
 
 const Selectors = {
     cohortSelector: "#id_cohortlist",
@@ -143,9 +146,38 @@ const submitForm = (dynamicTable, modal) => {
     modal.hide();
     modal.destroy();
 
-    return Promise.all([
-        DynamicTable.refreshTableContent(dynamicTable),
-    ]);
+    // eslint-disable-next-line no-console
+    //console.log(`${Config.wwwroot}/local/course_studentreports/ajax.php?${form.serialize()}`);
+
+    jQuery.ajax(
+        `${Config.wwwroot}/local/course_studentreports/ajax.php?${form.serialize()}`,
+        {
+            type: 'GET',
+            processData: false,
+            contentType: "application/json",
+        }
+    )
+    .then(response => {
+        if (response.error) {
+            throw new Error(response.error);
+        }
+
+        return response.count;
+    })
+    .then(count => {
+        return Promise.all([
+            Str.get_string('totalusers', 'local_course_studentreports', count),
+            DynamicTable.refreshTableContent(dynamicTable),
+        ]);
+    })
+    .then(([notificationBody]) => notificationBody)
+    .then(notificationBody => Toast.add(notificationBody))
+    .catch(error => {
+        Notification.addNotification({
+            message: error.message,
+            type: 'error',
+        });
+    });
 };
 
 /**

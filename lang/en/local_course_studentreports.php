@@ -46,3 +46,4 @@ $string['csvfilename'] = 'studentreports.{$a->shortname}.{$a->time}';
 $string['actionerror'] = 'You do not have permission to view this page.';
 // Modal strings.
 $string['studentselect'] = 'Student selection';
+$string['totalusers'] = '{$a} users added';

@@ -91,6 +91,13 @@ class local_course_studentreports_add_users_form extends moodleform {
                 'userfields' => implode(',', \core_user\fields::get_identity_fields($context, true))
         );
         $mform->addElement('autocomplete', 'userlist', get_string('selectusers', 'enrol_manual'), array(), $options);
+
+        $mform->addElement('hidden', 'id', $course->id);
+        $mform->setType('id', PARAM_INT);
+        $mform->addElement('hidden', 'action', 'add');
+        $mform->setType('action', PARAM_ALPHA);
+        $mform->addElement('hidden', 'enrolid', $instance->id);
+        $mform->setType('enrolid', PARAM_INT);
     }
 
     /**

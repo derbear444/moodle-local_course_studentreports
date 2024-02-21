@@ -121,16 +121,16 @@ class users extends \table_sql implements dynamic_table
      */
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '')
     {
-        global $CFG, $OUTPUT, $PAGE;
+        global $CFG, $OUTPUT;
 
         // Define the headers and columns.
         $headers = [];
         $columns = [];
 
         // At the very least, the user viewing this table will be able to use bulk actions to export it, so add 'select' column.
-        $mastercheckbox = new \core\output\checkbox_toggleall('participants-table', true, [
-            'id' => 'select-all-participants',
-            'name' => 'select-all-participants',
+        $mastercheckbox = new \core\output\checkbox_toggleall('users-table', true, [
+            'id' => 'select-all-users',
+            'name' => 'select-all-users',
             'label' => get_string('selectall'),
             'labelclasses' => 'sr-only',
             'classes' => 'm-1',
@@ -220,7 +220,7 @@ class users extends \table_sql implements dynamic_table
     {
         global $OUTPUT;
 
-        $checkbox = new \core\output\checkbox_toggleall('participants-table', false, [
+        $checkbox = new \core\output\checkbox_toggleall('users-table', false, [
             'classes' => 'usercheckbox m-1',
             'id' => 'user' . $data->id,
             'name' => 'user' . $data->id,
@@ -380,6 +380,25 @@ class users extends \table_sql implements dynamic_table
     }
 
     /**
+     * Accepts user selections from js and appends them to the users table.
+     *
+     * @param array $row
+     * @param string $classname
+     */
+    //public function add_data($row, $classname = '') {
+        // Possibly format row.
+        //$row = parent::format_row($row);
+
+        // Inject user data into rawdata.
+//        foreach ($row as $user) {
+//            $this->rawdata[$user->id] = $user;
+//        }
+
+        // Rebuilds the table with new row.
+//        $this->finish_output();
+    //}
+
+    /**
      * Override the table show_hide_link to not show for select column.
      *
      * @param string $column the column name, index into various names.
@@ -411,11 +430,11 @@ class users extends \table_sql implements dynamic_table
     }
 
     /**
-     * Guess the base url for the participants table.
+     * Guess the base url for the current table.
      */
     public function guess_base_url(): void
     {
-        $this->baseurl = new moodle_url('/user/index.php', ['id' => $this->courseid]);
+        $this->baseurl = new moodle_url('/local/course_studentreports/index.php', ['courseid' => $this->courseid]);
     }
 
     /**
