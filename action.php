@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Defines actions for buttons in plugin.
+ * Processes downloading the requested report to the requesting user's machine.
  *
  * @package     local_course_studentreports
  * @author      2023 Derek Wilson <wilsondc5@appstate.edu>
@@ -104,8 +104,8 @@ if ($data = data_submitted()) {
                 $user_final_grade = get_string('nodata', 'local_course_studentreports');
                 // Double-checks that the grade_items record exists
                 if ($course_final_grades) {
-                    // Gets the final grade for the user
-                    $user_final_grade = $DB->get_record('grade_grades', array('itemid' => $course_final_grades->id, 'userid' => $user->id), 'finalgrade')->finalgrade;
+                    // Gets the final grade for the user by grabbing all aggregation records for the user in the course, and grabbing the one most recently modified.
+                    $user_final_grade = array_reverse($DB->get_records('grade_grades_history', ['itemid' => $course_final_grades->id, 'userid' => $user->id, 'source' => 'aggregation'], 'timemodified'))[0]->finalgrade;
                 }
                 // Adds csv column
                 $csvdata[] = $user_final_grade;

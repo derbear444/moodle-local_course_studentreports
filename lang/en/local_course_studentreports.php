@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Course Student Reports';
 $string['nav_course_studentreports'] = 'Student reports';
 $string['course_studentreports_courseheading'] = 'Student reports: {$a}';
-$string['course_studentreports_participantsfound'] = '{$a} participants found';
+$string['course_studentreports_participantsfound'] = '{$a} total users found';
 $string['withselectedusers'] = 'Select reports to generate with selected users...';
 $string['csvdownload'] = 'Download .csv';
 $string['adduser'] = 'Add students';
@@ -46,4 +46,6 @@ $string['csvfilename'] = 'studentreports.{$a->shortname}.{$a->time}';
 $string['actionerror'] = 'You do not have permission to view this page.';
 // Modal strings.
 $string['studentselect'] = 'Student selection';
-$string['totalusers'] = '{$a} users added';
+$string['totalusers'] = '{$a} user(s) added';
+// Cache strings.
+$string['cachedef_userids'] = 'Stores userids from the user selector to add to the dynamic table.';

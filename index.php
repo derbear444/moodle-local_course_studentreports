@@ -24,15 +24,15 @@
  */
 
 require_once('../../config.php');
-require_once('./locallib.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/user/lib.php');
 require_once($CFG->dirroot . '/enrol/locallib.php');
 
-use local_course_studentreports\table;
 use core\report_helper;
 use core_table\local\filter\filter;
 use core_table\local\filter\integer_filter;
+use local_course_studentreports\button;
+use local_course_studentreports\table;
 
 // Sets default page size.
 $participantsperpage = intval(get_config('moodlecourse', 'participantsperpage'));
@@ -85,14 +85,15 @@ if ($courseid != $SITE->id) {
     $participanttable = new table\users("user-index-studentreports-{$course->id}");
 
     // Adds user button to navigation.
-    $adduserurl = new moodle_url( '/local/course_studentreports/add.php', array('enrolid'=>1, 'id'=>$course->id));
+    // Just refreshes the page if JS is disabled, so JS is required for this to work.
+    $adduserurl = new moodle_url( '#');
 
     // Adds adduser JS script and creates Add User button
     $adduseroptions = (object) [
             'contextid' => $context->id,
     ];
     $PAGE->requires->js_call_amd('local_course_studentreports/adduser', 'init', [$adduseroptions]);
-    $adduserbutton = new add_user_button($adduserurl, get_string('adduser', 'local_course_studentreports'), 'get');
+    $adduserbutton = new button\add_user_button($adduserurl, get_string('adduser', 'local_course_studentreports'), 'get');
     $adduserbuttonout = $output->render($adduserbutton);
 
     echo html_writer::div($adduserbuttonout, 'addusersbutton', [
@@ -132,13 +133,17 @@ if ($courseid != $SITE->id) {
     ]);
     echo '<div>';
 
-    echo html_writer::tag(
-            'p',
-            get_string('course_studentreports_participantsfound', 'local_course_studentreports', $participanttable->totalrows),
-            [
-                    'data-region' => 'participant-count',
-            ]
-    );
+    // Removed showing the total number of users in the table because this value doesn't update when the table is refreshed.
+    //
+    // I'm leaving this line here just to show the beginning of the thread where this total count info is available in case it
+    //  is ever properly implemented.
+//    echo html_writer::tag(
+//            'p',
+//            get_string('course_studentreports_participantsfound', 'local_course_studentreports', $participanttable->totalrows),
+//            [
+//                    'data-region' => 'participant-count',
+//            ]
+//    );
 
     echo $participanttablehtml;
 
@@ -173,7 +178,7 @@ if ($courseid != $SITE->id) {
     echo '</div></div></div>';
 
     // Need to re-generate the buttons to avoid having elements with duplicate ids on the page.
-    $adduserbutton = new add_user_button($adduserurl, get_string('adduser', 'local_course_studentreports'));
+    $adduserbutton = new button\add_user_button($adduserurl, get_string('adduser', 'local_course_studentreports'));
     $adduserbuttonout = $output->render($adduserbutton);
 
     // Add buttons.

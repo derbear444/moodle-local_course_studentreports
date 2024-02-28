@@ -68,7 +68,6 @@ function local_course_studentreports_extend_navigation_course(navigation_node $n
  */
 function local_course_studentreports_output_fragment_add_users_form($args) {
     $args = (object) $args;
-    $context = $args->context;
     $o = '';
 
     $mform = new local_course_studentreports_add_users_form(null, $args);

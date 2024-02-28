@@ -23,6 +23,12 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_course_studentreports\button;
+
+use moodle_page;
+use single_button;
+use moodle_url;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**

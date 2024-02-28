@@ -146,9 +146,6 @@ const submitForm = (dynamicTable, modal) => {
     modal.hide();
     modal.destroy();
 
-    // eslint-disable-next-line no-console
-    //console.log(`${Config.wwwroot}/local/course_studentreports/ajax.php?${form.serialize()}`);
-
     jQuery.ajax(
         `${Config.wwwroot}/local/course_studentreports/ajax.php?${form.serialize()}`,
         {

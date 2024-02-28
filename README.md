@@ -1,8 +1,7 @@
 # Course Student Reports #
 
-TODO Describe the plugin shortly here.
-
-TODO Provide more detailed description here.
+Adds a Student Reports course report type that can be used to quickly grab information about the students in the course,
+such as final grade, last date of attendance, and more.
 
 ## Installing via uploaded ZIP file ##
 
@@ -29,7 +28,7 @@ to complete the installation from the command line.
 
 ## License ##
 
-2023 Derek Wilson <wilsondc5@appstate.edu>
+2024 Derek Wilson <wilsondc5@appstate.edu>
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

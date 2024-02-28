@@ -62,23 +62,9 @@ class local_course_studentreports_add_users_form extends moodleform {
         $mform = $this->_form;
         $mform->setDisableShortforms();
         $mform->disable_form_change_checker();
-        $periodmenu = enrol_get_period_list();
-        // Work out the appropriate default settings.
-        $defaultperiod = $instance->enrolperiod;
-        if ($instance->enrolperiod > 0 && !isset($periodmenu[$instance->enrolperiod])) {
-            $periodmenu[$instance->enrolperiod] = format_time($instance->enrolperiod);
-        }
-        if (empty($extendbase)) {
-            if (!$extendbase = get_config('enrol_manual', 'enrolstart')) {
-                // Default to now if there is no system setting.
-                $extendbase = 4;
-            }
-        }
 
         // Build the list of options for the starting from dropdown.
         $now = time();
-        $today = make_timestamp(date('Y', $now), date('m', $now), date('d', $now), 0, 0, 0);
-        $dateformat = get_string('strftimedatefullshort');
 
         // Adds student select
         $mform->addElement('header', 'main', get_string('studentselect', 'local_course_studentreports'));

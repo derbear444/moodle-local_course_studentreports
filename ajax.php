@@ -20,9 +20,10 @@
  * The general idea behind this file is that any errors should throw exceptions
  * which will be returned and acted upon by the calling AJAX script.
  *
- * @package    enrol_manual
- * @copyright  2010 Sam Hemelryk
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_course_studentreports
+ * @author      2023 Derek Wilson <wilsondc5@appstate.edu>
+ * @copyright   (c) 2023 Appalachian State University, Boone, NC
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define('AJAX_SCRIPT', true);
@@ -40,7 +41,7 @@ $action  = required_param('action', PARAM_ALPHANUMEXT);
 $PAGE->set_url(new moodle_url('/local/course_studentreports/ajax.php', array('id'=>$id, 'action'=>$action)));
 
 $course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
-$context = context_course::instance($course->id, MUST_EXIST);
+$context = context_course::instance($course->id);
 
 if ($course->id == SITEID) {
     throw new moodle_exception('invalidcourse');
@@ -74,63 +75,57 @@ switch ($action) {
         if ($userids) {
             foreach ($userids as $userid) {
                 $users[] = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
+                $outcome->count++;
             }
         }
 
-        $roleid = intval($DB->get_record('role', array('shortname' => 'student'), 'id', MUST_EXIST)->id);
-        $duration = optional_param('duration', 0, PARAM_INT);
-        $startdate = optional_param('startdate', 0, PARAM_INT);
-        $recovergrades = optional_param('recovergrades', 0, PARAM_INT);
-        $timeend = optional_param_array('timeend', [], PARAM_INT);
+        // Adds necessary user data to the cache for the dynamic table.
+        $cache = cache::make('local_course_studentreports', 'users');
+        $cache->set('users', $users);
 
-        if (empty($roleid)) {
-            $roleid = null;
-        } else {
-            if (!array_key_exists($roleid, get_assignable_roles($context, ROLENAME_ALIAS, false))) {
-                throw new enrol_ajax_exception('invalidrole');
-            }
-        }
-
-        if (empty($startdate)) {
-            if (!$startdate = get_config('enrol_manual', 'enrolstart')) {
-                // Default to now if there is no system setting.
-                $startdate = 4;
-            }
-        }
-
-        switch($startdate) {
-            case 2:
-                $timestart = $course->startdate;
-                break;
-            case 4:
-                // We mimic get_enrolled_sql round(time(), -2) but always floor as we want users to always access their
-                // courses once they are enrolled.
-                $timestart = intval(substr(time(), 0, 8) . '00') - 1;
-                break;
-            case 3:
-            default:
-                $today = time();
-                $today = make_timestamp(date('Y', $today), date('m', $today), date('d', $today), 0, 0, 0);
-                $timestart = $today;
-                break;
-        }
-        if ($timeend) {
-            $timeend = make_timestamp($timeend['year'], $timeend['month'], $timeend['day'], $timeend['hour'], $timeend['minute']);
-        } else if ($duration <= 0) {
-            $timeend = 0;
-        } else {
-            $timeend = $timestart + $duration;
-        }
-
-//        $mform = new enrol_manual_enrol_users_form(null, (object)["context" => $context]);
-//        $userenroldata = [
-//            'startdate' => $timestart,
-//            'timeend' => $timeend,
-//        ];
-//        $mform->set_data($userenroldata);
-//        $validationerrors = $mform->validation($userenroldata, null);
-//        if (!empty($validationerrors)) {
-//            throw new enrol_ajax_exception('invalidenrolduration');
+//        $roleid = intval($DB->get_record('role', array('shortname' => 'student'), 'id', MUST_EXIST)->id);
+//        $duration = optional_param('duration', 0, PARAM_INT);
+//        $startdate = optional_param('startdate', 0, PARAM_INT);
+//        $recovergrades = optional_param('recovergrades', 0, PARAM_INT);
+//        $timeend = optional_param_array('timeend', [], PARAM_INT);
+//
+//        if (empty($roleid)) {
+//            $roleid = null;
+//        } else {
+//            if (!array_key_exists($roleid, get_assignable_roles($context, ROLENAME_ALIAS, false))) {
+//                throw new enrol_ajax_exception('invalidrole');
+//            }
+//        }
+//
+//        if (empty($startdate)) {
+//            if (!$startdate = get_config('enrol_manual', 'enrolstart')) {
+//                // Default to now if there is no system setting.
+//                $startdate = 4;
+//            }
+//        }
+//
+//        switch($startdate) {
+//            case 2:
+//                $timestart = $course->startdate;
+//                break;
+//            case 4:
+//                // We mimic get_enrolled_sql round(time(), -2) but always floor as we want users to always access their
+//                // courses once they are enrolled.
+//                $timestart = intval(substr(time(), 0, 8) . '00') - 1;
+//                break;
+//            case 3:
+//            default:
+//                $today = time();
+//                $today = make_timestamp(date('Y', $today), date('m', $today), date('d', $today), 0, 0, 0);
+//                $timestart = $today;
+//                break;
+//        }
+//        if ($timeend) {
+//            $timeend = make_timestamp($timeend['year'], $timeend['month'], $timeend['day'], $timeend['hour'], $timeend['minute']);
+//        } else if ($duration <= 0) {
+//            $timeend = 0;
+//        } else {
+//            $timeend = $timestart + $duration;
 //        }
 
         $outcome->success = true;

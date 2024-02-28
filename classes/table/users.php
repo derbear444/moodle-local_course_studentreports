@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace local_course_studentreports\table;
 
+use cache;
 use context;
 use core_table\dynamic as dynamic_table;
 use core_table\local\filter\filterset;
@@ -349,7 +350,14 @@ class users extends \table_sql implements dynamic_table
         list($twhere, $tparams) = $this->get_sql_where();
         $psearch = new users_search($this->course, $this->context, $this->filterset);
 
+        $cache = cache::make('local_course_studentreports', 'users');
+        $addedusers = $cache->get('users');
+
         $total = $psearch->get_total_participants_count($twhere, $tparams);
+        // Adds in the total from the user selector if there are any.
+        if ($addedusers) {
+            $total += count($addedusers);
+        }
 
         $this->pagesize($pagesize, $total);
 
@@ -360,11 +368,19 @@ class users extends \table_sql implements dynamic_table
 
         $rawdata = $psearch->get_participants($twhere, $tparams, $sort, $this->get_page_start(), $this->get_page_size());
 
+        // Adds the participants in the course.
         $this->rawdata = [];
         foreach ($rawdata as $user) {
             $this->rawdata[$user->id] = $user;
         }
         $rawdata->close();
+
+        // Adds in any extra users that were in the cache.
+        if ($addedusers) {
+            foreach ($addedusers as $user) {
+                $this->rawdata[$user->id] = $user;
+            }
+        }
 
         if ($this->rawdata) {
             $this->allroleassignments = get_users_roles($this->context, array_keys($this->rawdata),
@@ -378,25 +394,6 @@ class users extends \table_sql implements dynamic_table
             $this->initialbars(true);
         }
     }
-
-    /**
-     * Accepts user selections from js and appends them to the users table.
-     *
-     * @param array $row
-     * @param string $classname
-     */
-    //public function add_data($row, $classname = '') {
-        // Possibly format row.
-        //$row = parent::format_row($row);
-
-        // Inject user data into rawdata.
-//        foreach ($row as $user) {
-//            $this->rawdata[$user->id] = $user;
-//        }
-
-        // Rebuilds the table with new row.
-//        $this->finish_output();
-    //}
 
     /**
      * Override the table show_hide_link to not show for select column.

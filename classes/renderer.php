@@ -23,6 +23,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_course_studentreports\button\add_user_button;
+
 /**
  * The core renderer
  *
