@@ -28,8 +28,7 @@ namespace local_course_studentreports\button;
 use moodle_page;
 use single_button;
 use moodle_url;
-
-defined('MOODLE_INTERNAL') || die();
+use stdClass;
 
 /**
  * A button that is used to add a user to the participants table.
@@ -44,24 +43,23 @@ class add_user_button extends single_button {
      * An array containing JS YUI modules required by this button
      * @var array
      */
-    protected $jsyuimodules = array();
+    protected $jsyuimodules = [];
 
     /**
      * An array containing JS initialisation calls required by this button
      * @var array
      */
-    protected $jsinitcalls = array();
+    protected $jsinitcalls = [];
 
     /**
      * An array strings required by JS for this button
      * @var array
      */
-    protected $jsstrings = array();
+    protected $jsstrings = [];
 
     /**
      * Initialises the new add_user_button
      *
-     * @staticvar int $count The number of add user buttons already created
      * @param moodle_url $url
      * @param string $label The text to display in the button
      * @param string $method Either post or get
@@ -120,7 +118,7 @@ class add_user_button extends single_button {
      * @param string $component
      * @param mixed $a
      */
-    public function strings_for_js($identifiers, $component = 'moodle', $a = null) {
+    public function strings_for_js(type $identifiers, string $component = 'moodle', mixed $a = null) {
         $string = new stdClass;
         $string->identifiers = (array)$identifiers;
         $string->component = $component;

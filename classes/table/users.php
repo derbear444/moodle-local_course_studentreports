@@ -18,7 +18,6 @@
  * Contains the class used for the displaying the users table.
  *
  * @package     local_course_studentreports
- * @category    table
  * @author      2023 Derek Wilson <wilsondc5@appstate.edu>
  * @copyright   (c) 2023 Appalachian State University, Boone, NC
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -49,8 +48,7 @@ require_once($CFG->dirroot . '/user/lib.php');
  * @copyright   (c) 2023 Appalachian State University, Boone, NC
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class users extends \table_sql implements dynamic_table
-{
+class users extends \table_sql implements dynamic_table {
 
     /**
      * @var int $courseid The course id
@@ -120,8 +118,7 @@ class users extends \table_sql implements dynamic_table
      * @param bool $useinitialsbar Whether to use the initials bar which will only be used if there is a fullname column defined.
      * @param string $downloadhelpbutton
      */
-    public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '')
-    {
+    public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
         global $CFG, $OUTPUT;
 
         // Define the headers and columns.
@@ -153,7 +150,7 @@ class users extends \table_sql implements dynamic_table
         $columns[] = 'roles';
 
         // Get the list of fields we have to hide.
-        $hiddenfields = array();
+        $hiddenfields = [];
         if (!has_capability('moodle/course:viewhiddenuserfields', $this->context)) {
             $hiddenfields = array_flip(explode(',', $CFG->hiddenuserfields));
         }
@@ -217,8 +214,7 @@ class users extends \table_sql implements dynamic_table
      * @param \stdClass $data
      * @return string
      */
-    public function col_select($data)
-    {
+    public function col_select($data) {
         global $OUTPUT;
 
         $checkbox = new \core\output\checkbox_toggleall('users-table', false, [
@@ -239,8 +235,7 @@ class users extends \table_sql implements dynamic_table
      * @param \stdClass $data
      * @return string
      */
-    public function col_fullname($data)
-    {
+    public function col_fullname($data) {
         global $OUTPUT;
         return $OUTPUT->render(\core_user::get_profile_picture($data, null,
             ['courseid' => $this->course->id, 'includefullname' => true]));
@@ -252,8 +247,7 @@ class users extends \table_sql implements dynamic_table
      * @param \stdClass $data
      * @return string
      */
-    public function col_roles($data)
-    {
+    public function col_roles($data) {
         global $OUTPUT;
 
         $roles = isset($this->allroleassignments[$data->id]) ? $this->allroleassignments[$data->id] : [];
@@ -275,8 +269,7 @@ class users extends \table_sql implements dynamic_table
      * @param \stdClass $data
      * @return string
      */
-    public function col_groups($data)
-    {
+    public function col_groups($data) {
         global $OUTPUT;
 
         $usergroups = [];
@@ -295,8 +288,7 @@ class users extends \table_sql implements dynamic_table
      * @param \stdClass $data
      * @return string
      */
-    public function col_country($data)
-    {
+    public function col_country($data) {
         if (!empty($this->countries[$data->country])) {
             return $this->countries[$data->country];
         }
@@ -309,8 +301,7 @@ class users extends \table_sql implements dynamic_table
      * @param \stdClass $data
      * @return string
      */
-    public function col_lastaccess($data)
-    {
+    public function col_lastaccess($data) {
         if ($data->lastaccess) {
             return format_time(time() - $data->lastaccess);
         }
@@ -329,8 +320,7 @@ class users extends \table_sql implements dynamic_table
      * @param \stdClass $data
      * @return string
      */
-    public function other_cols($colname, $data)
-    {
+    public function other_cols($colname, $data) {
         // Do not process if it is not a part of the extra fields.
         if (!in_array($colname, $this->extrafields)) {
             return '';
@@ -345,8 +335,7 @@ class users extends \table_sql implements dynamic_table
      * @param int $pagesize size of page for paginated displayed table.
      * @param bool $useinitialsbar do you want to use the initials bar.
      */
-    public function query_db($pagesize, $useinitialsbar = true)
-    {
+    public function query_db($pagesize, $useinitialsbar = true) {
         list($twhere, $tparams) = $this->get_sql_where();
         $psearch = new users_search($this->course, $this->context, $this->filterset);
 
@@ -402,8 +391,7 @@ class users extends \table_sql implements dynamic_table
      * @param int $index numerical index of the column.
      * @return string HTML fragment.
      */
-    protected function show_hide_link($column, $index)
-    {
+    protected function show_hide_link($column, $index) {
         if ($index > 0) {
             return parent::show_hide_link($column, $index);
         }
@@ -415,8 +403,7 @@ class users extends \table_sql implements dynamic_table
      *
      * @param filterset $filterset The filterset object to get the filters from.
      */
-    public function set_filterset(filterset $filterset): void
-    {
+    public function set_filterset(filterset $filterset): void {
         // Get the context.
         $this->courseid = $filterset->get_filter('courseid')->current();
         $this->course = get_course($this->courseid);
@@ -429,8 +416,7 @@ class users extends \table_sql implements dynamic_table
     /**
      * Guess the base url for the current table.
      */
-    public function guess_base_url(): void
-    {
+    public function guess_base_url(): void {
         $this->baseurl = new moodle_url('/local/course_studentreports/index.php', ['courseid' => $this->courseid]);
     }
 
@@ -441,8 +427,7 @@ class users extends \table_sql implements dynamic_table
      *
      * @return context
      */
-    public function get_context(): context
-    {
+    public function get_context(): context {
         return $this->context;
     }
 }

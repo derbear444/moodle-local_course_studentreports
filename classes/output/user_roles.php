@@ -57,8 +57,11 @@ class user_roles extends \core\output\inplace_editable {
      * @param \stdClass[] $assignableroles The list of assignable roles in this course.
      * @param \stdClass[] $profileroles The list of roles that should be visible in a users profile.
      * @param \stdClass[] $userroles The list of user roles.
+     * @param null $viewableroles
+     * @throws coding_exception
      */
-    public function __construct($course, $context, $user, $courseroles, $assignableroles, $profileroles, $userroles, $viewableroles = null) {
+    public function __construct($course, $context, $user, $courseroles,
+                                $assignableroles, $profileroles, $userroles, $viewableroles = null) {
         if ($viewableroles === null) {
             debugging('Constructor for user_roles now needs the result of get_viewable_roles passed as viewableroles');
         }
@@ -168,7 +171,7 @@ class user_roles extends \core\output\inplace_editable {
         $profileroles = get_profile_roles($context);
 
         // Set an array where the index is the roleid.
-        $userroles = array();
+        $userroles = [];
         foreach ($userrolesbyid as $id => $role) {
             $userroles[$role->roleid] = $role;
         }
@@ -202,8 +205,11 @@ class user_roles extends \core\output\inplace_editable {
                 if ($userroles[$roleid]->contextid != $context->id) {
                     continue;
                 }
-                $ras = $DB->get_records('role_assignments', ['contextid' => $context->id, 'userid' => $userid,
-                    'roleid' => $roleid]);
+                $ras = $DB->get_records('role_assignments', [
+                    'contextid' => $context->id,
+                    'userid' => $userid,
+                    'roleid' => $roleid,
+                ]);
                 $allremoved = true;
                 foreach ($ras as $ra) {
                     if ($ra->component) {

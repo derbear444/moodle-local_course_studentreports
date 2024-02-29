@@ -23,8 +23,6 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * This function adds Student reports link to the course navigation block.
  * @param navigation_node $navigation a course navigation object
@@ -32,8 +30,9 @@ defined('MOODLE_INTERNAL') || die();
  * @param context_course $context current course context
  * @return void
  */
-function local_course_studentreports_extend_navigation_course(navigation_node $navigation, stdClass $course, context_course $context) {
-    // Add a link to the custom report in the course navigation for teachers
+function local_course_studentreports_extend_navigation_course(navigation_node $navigation,
+                                                              stdClass $course, context_course $context) {
+    // Add a link to the custom report in the course navigation for teachers.
     global $USER;
 
     // If for some reason there is no user ID, just return.
@@ -47,16 +46,16 @@ function local_course_studentreports_extend_navigation_course(navigation_node $n
     }
 
     // Find the node associated with the "Reports" page.
-    $reportsNode = $navigation->find("coursereports", navigation_node::TYPE_CONTAINER);
+    $reportsnode = $navigation->find("coursereports", navigation_node::TYPE_CONTAINER);
 
     // If the "Reports" node is found, add the link as a child.
-    if ($reportsNode) {
+    if ($reportsnode) {
         $icon = new pix_icon('i/report', '');
-        $linkName = get_string('nav_course_studentreports', 'local_course_studentreports');
-        $linkUrl = new moodle_url('/local/course_studentreports/index.php', array('courseid' => $course->id));
+        $linkname = get_string('nav_course_studentreports', 'local_course_studentreports');
+        $linkurl = new moodle_url('/local/course_studentreports/index.php', ['courseid' => $course->id]);
 
         // Add the link as a child to the "Reports" node.
-        $reportsNode->add($linkName, $linkUrl, navigation_node::TYPE_CUSTOM, $linkName, 'studentreports-link', $icon);
+        $reportsnode->add($linkname, $linkurl, navigation_node::TYPE_CUSTOM, $linkname, 'studentreports-link', $icon);
     }
 }
 

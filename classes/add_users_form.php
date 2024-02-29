@@ -30,6 +30,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * Defines the modal form shown to add new users to the table.
+ */
 class local_course_studentreports_add_users_form extends moodleform {
 
     /**
@@ -38,7 +41,6 @@ class local_course_studentreports_add_users_form extends moodleform {
      */
     public function definition() {
         global $PAGE, $DB, $CFG;
-
 
         require_once($CFG->dirroot . '/enrol/locallib.php');
 
@@ -63,20 +65,17 @@ class local_course_studentreports_add_users_form extends moodleform {
         $mform->setDisableShortforms();
         $mform->disable_form_change_checker();
 
-        // Build the list of options for the starting from dropdown.
-        $now = time();
-
-        // Adds student select
+        // Adds student select.
         $mform->addElement('header', 'main', get_string('studentselect', 'local_course_studentreports'));
-        $options = array(
+        $options = [
                 'ajax' => 'enrol_manual/form-potential-user-selector',
                 'multiple' => true,
                 'courseid' => $course->id,
                 'enrolid' => $instance->id,
                 'perpage' => $CFG->maxusersperpage,
-                'userfields' => implode(',', \core_user\fields::get_identity_fields($context, true))
-        );
-        $mform->addElement('autocomplete', 'userlist', get_string('selectusers', 'enrol_manual'), array(), $options);
+                'userfields' => implode(',', \core_user\fields::get_identity_fields($context)),
+        ];
+        $mform->addElement('autocomplete', 'userlist', get_string('selectusers', 'enrol_manual'), [], $options);
 
         $mform->addElement('hidden', 'id', $course->id);
         $mform->setType('id', PARAM_INT);

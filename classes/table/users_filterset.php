@@ -18,7 +18,6 @@
  * Users table filterset.
  *
  * @package     local_course_studentreports
- * @category    table
  * @author      2023 Derek Wilson <wilsondc5@appstate.edu>
  * @copyright   (c) 2023 Appalachian State University, Boone, NC
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

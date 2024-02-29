@@ -46,10 +46,13 @@ class local_course_studentreports_renderer extends plugin_renderer_base {
         $downloadurl->remove_params(['page']);
         $downloadurl->param('format', 'csv');
 
-        // Create a form with hidden inputs for parameters
+        // Create a form with hidden inputs for parameters.
         $form = html_writer::start_tag('form', ['method' => 'post', 'action' => $downloadurl]);
         $form .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'format', 'value' => 'csv']);
-        $form .= html_writer::empty_tag('input', ['type' => 'submit', 'value' => get_string('csvdownload', 'local_course_studentreports')]);
+        $form .= html_writer::empty_tag('input', [
+            'type' => 'submit',
+            'value' => get_string('csvdownload', 'local_course_studentreports'),
+        ]);
         $form .= html_writer::end_tag('form');
 
         $downloadhtml = html_writer::tag('div', $form);
@@ -64,11 +67,13 @@ class local_course_studentreports_renderer extends plugin_renderer_base {
      * @return string XHTML
      */
     protected function render_add_user_button(add_user_button $button) {
-        $attributes = array('type' => 'submit',
-                'value'    => $button->label,
-                'disabled' => $button->disabled ? 'disabled' : null,
-                'title'    => $button->tooltip,
-                'class'    => 'btn btn-primary');
+        $attributes = [
+            'type' => 'submit',
+            'value'    => $button->label,
+            'disabled' => $button->disabled ? 'disabled' : null,
+            'title'    => $button->tooltip,
+            'class'    => 'btn btn-primary',
+        ];
 
         if ($button->actions) {
             $id = html_writer::random_id('single_button');
@@ -79,36 +84,45 @@ class local_course_studentreports_renderer extends plugin_renderer_base {
         }
         $button->initialise_js($this->page);
 
-        // first the input element
+        // First the input element.
         $output = html_writer::empty_tag('input', $attributes);
 
-        // then hidden fields
+        // Then hidden fields.
         $params = $button->url->params();
         if ($button->method === 'post') {
             $params['sesskey'] = sesskey();
         }
         foreach ($params as $var => $val) {
-            $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $var, 'value' => $val));
+            $output .= html_writer::empty_tag('input', [
+                'type' => 'hidden',
+                'name' => $var,
+                'value' => $val,
+            ]);
         }
 
-        // then div wrapper for xhtml strictness
+        // Then div wrapper for xhtml strictness.
         $output = html_writer::tag('div', $output);
 
-        // now the form itself around it
+        // Now the form itself around it.
         if ($button->method === 'get') {
-            $url = $button->url->out_omit_querystring(true); // url without params, the anchor part allowed
+            // Url without params, the anchor part allowed.
+            $url = $button->url->out_omit_querystring(true);
         } else {
-            $url = $button->url->out_omit_querystring();     // url without params, the anchor part not allowed
+            // Url without params, the anchor part not allowed.
+            $url = $button->url->out_omit_querystring();
         }
         if ($url === '') {
-            $url = '#'; // there has to be always some action
+            // There has to be always some action.
+            $url = '#';
         }
-        $attributes = array('method' => $button->method,
-                'action' => $url,
-                'id'     => $button->formid);
+        $attributes = [
+            'method' => $button->method,
+            'action' => $url,
+            'id'     => $button->formid,
+        ];
         $output = html_writer::tag('form', $output, $attributes);
 
-        // and finally one more wrapper with class
-        return html_writer::tag('div', $output, array('class' => $button->class));
+        // And finally one more wrapper with class.
+        return html_writer::tag('div', $output, ['class' => $button->class]);
     }
 }
