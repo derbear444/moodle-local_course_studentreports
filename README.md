@@ -1,7 +1,9 @@
 # Course Student Reports #
 
 Adds a Student Reports course report type that can be used to quickly grab information about the students in the course,
-such as final grade, last date of attendance, and more.
+such as final grade, last date of attendance, and more. 
+
+The report can be accessed at Course > Reports > Student reports.
 
 ## Installing via uploaded ZIP file ##
 
