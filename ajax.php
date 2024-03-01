@@ -81,6 +81,14 @@ switch ($action) {
 
         // Adds necessary user data to the cache for the dynamic table.
         $cache = cache::make('local_course_studentreports', 'users');
+        // Check if there are any users already in the session cache.
+        $currentusers = $cache->get('users');
+        // If so, merge the arrays before setting in the cache.
+        if ($currentusers) {
+            // Merge the two arrays. The new array keys will override the original array if the same keys exist.
+            $users = array_merge($currentusers, $users);
+        }
+        // Sets the users in the cache.
         $cache->set('users', $users);
 
         $outcome->success = true;
