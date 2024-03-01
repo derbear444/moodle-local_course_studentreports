@@ -57,6 +57,10 @@ $PAGE->set_pagelayout('report');
 
 // If a course is specified, list the users for that course.
 if ($courseid != $SITE->id) {
+    // Clear the session cache key.
+    $cache = cache::make('local_course_studentreports', 'users');
+    $cache->delete('users');
+
     $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
     require_login($course);
 
