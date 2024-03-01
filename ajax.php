@@ -74,7 +74,9 @@ switch ($action) {
         }
         if ($userids) {
             foreach ($userids as $userid) {
-                $users[] = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
+                $userrecord = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
+                $userrecord->checked = true;
+                $users[] = $userrecord;
                 $outcome->count++;
             }
         }

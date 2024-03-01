@@ -221,7 +221,7 @@ class users extends \table_sql implements dynamic_table {
             'classes' => 'usercheckbox m-1',
             'id' => 'user' . $data->id,
             'name' => 'user' . $data->id,
-            'checked' => false,
+            'checked' => isset($data->checked),
             'label' => get_string('selectitem', 'moodle', fullname($data)),
             'labelclasses' => 'accesshide',
         ]);
